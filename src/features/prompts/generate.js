@@ -1,6 +1,8 @@
 import db from '../../db/connect.js';
 import { generateAndSaveStory } from '../ai/request.js';
 
+const pendingStories = [];
+
 const generateStoryHandler = async (request, reply) => {
   const { id } = request.query;
 
@@ -15,8 +17,20 @@ const generateStoryHandler = async (request, reply) => {
     if (!prompt) {
       return reply.status(404).send({ error: 'Prompt not found.' });
     }
+    
+    const storyExists = db.prepare('SELECT * FROM stories WHERE prompt_id = ?').get(id);
 
+    if (storyExists) {
+      return reply.status(500).send({ error: 'Story already exist' });
+    }
+    
     const storyTitle = prompt.title;
+
+    if (pendingStories.includes(id)) {
+      return reply.status(429).send({ error: 'Story generation is already in progress for this prompt.' });
+    }
+    
+    pendingStories.push(id);
 
     const storyResult = await generateAndSaveStory({ text: prompt.text, id: prompt.id });
 
