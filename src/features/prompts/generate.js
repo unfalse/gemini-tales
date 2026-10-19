@@ -1,7 +1,7 @@
 import db from '../../db/connect.js';
 import { generateAndSaveStory } from '../ai/request.js';
 
-const pendingStories = [];
+const pendingStories = new Set();
 
 const generateStoryHandler = async (request, reply) => {
   const { id } = request.query;
@@ -26,11 +26,11 @@ const generateStoryHandler = async (request, reply) => {
     
     const storyTitle = prompt.title;
 
-    if (pendingStories.includes(id)) {
+    if (pendingStories.has(id)) {
       return reply.status(429).send({ error: 'Story generation is already in progress for this prompt.' });
     }
     
-    pendingStories.push(id);
+    pendingStories.add(id);
 
     const storyResult = await generateAndSaveStory({ text: prompt.text, id: prompt.id });
 
@@ -43,9 +43,14 @@ const generateStoryHandler = async (request, reply) => {
       .get(storyResult.storyId)
       .story;
 
+    pendingStories.delete(id);
+
     return reply.view('story.ejs', { content: storyText, title: storyTitle });
   } catch (error) {
     console.error('Error generating story:', error);
+
+    pendingStories.delete(id);
+
     return reply.status(500).send({ error: 'Internal server error.' });
   }
 };
