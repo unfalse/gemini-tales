@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import formbody from '@fastify/formbody';
 import cookie from '@fastify/cookie';
 import fastifyView from '@fastify/view';
+import fastifyStatic from '@fastify/static';
 import path from 'node:path';
 import ejs from 'ejs';
 
@@ -18,6 +19,11 @@ import { storyPage } from './pages/story.js';
 export function buildApp() {
   const app = Fastify({
     logger: true,
+  });
+
+  app.register(fastifyStatic, {
+    root: path.join(process.cwd(), 'src/public'),
+    prefix: '/',
   });
 
   app.register(fastifyView, {
