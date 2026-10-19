@@ -23,3 +23,15 @@ pre {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
+.links a {
+  border: 1px solid blue;
+  border-radius: 10px;
+  padding: 6px;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.error {
+  color: red;
+}

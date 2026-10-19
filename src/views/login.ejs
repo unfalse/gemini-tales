@@ -1,9 +1,15 @@
 <!doctype html>
 <html lang="ru">
-  <%- include('partials/header', { title: 'Login' }) %>
+  <%- include('partials/head', { title: 'Login', includeGTAG: false }) %>
 
   <body>
+    <%- include('partials/menu') %>
+
     <h1>Welcome to the Login Page</h1>
+
+    <% if (message) { %>
+      <p class="error"><%= message %></p>
+    <% } %>
 
     <section>
       <h2>Login</h2>

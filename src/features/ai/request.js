@@ -5,25 +5,43 @@ import db from '../../db/connect.js';
 
 const ai = new GoogleGenAI();
 
-const generateAndSaveStory = async (promptObject) => {
+const sendPrompt = async () => {
   try {
-    console.log('Отправка промпта в Gemini API...');
-
-    const response = await ai.models.generateContent({
+    return await ai.models.generateContent({
       model: 'gemini-flash-latest',
       contents: promptObject.text,
     });
+  } catch(err) {
+    console.error('Error happened on sending the prompt:', error);
+  }
+}
 
-    const storyText = response.text;
+const saveStoryToDB = (storyText, promptObject) => {
+  return db
+    .prepare('INSERT INTO stories (story, prompt_id) VALUES (?, ?)')
+    .run(storyText, promptObject.id);
+}
 
-    const result = db
-      .prepare('INSERT INTO stories (story, prompt_id) VALUES (?, ?)')
-      .run(storyText, promptObject.id);
+const generateAndSaveStory = async (promptObject) => {
+  let storyText;
 
-    console.log(`\nУспешно! Рассказ сохранен в базу данных с ID: ${result.lastInsertRowid}\n`);
+  try {
+    console.log('Sending prompt to Gemini API...');
+    const response = await sendPrompt();
+    storyText = response.text;
+  } catch(err) {
+    console.error('Error happened on sending the prompt:', error);
+    return { success: false, error };
+  }
+
+  try {
+    const result = saveStoryToDB(storyText, promptObject);
+
+    console.log(`\nStory was saved to DB with ID: ${result.lastInsertRowid}\n`);
+
     return { success: true, storyId: result.lastInsertRowid };
   } catch (error) {
-    console.error('Произошла ошибка при генерации или сохранении:', error);
+    console.error('Error happened on save:', error);
     return { success: false, error };
   }
 }
