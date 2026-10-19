@@ -1,11 +1,9 @@
 <!doctype html>
 <html lang="ru">
-  <%- include('partials/header', { title: 'Story' }) %>
+  <%- include('partials/head', { title: 'Story', includeGTAG: false }) %>
 
   <body>
-    <p>
-      <a href="/">Back to Main Page</a>
-    </p>
+    <%- include('partials/menu') %>
 
     <h1><%= title %></h1>
 
@@ -13,8 +11,5 @@
       <pre><%= content %></pre>
     </section>
 
-    <p>
-      <a href="/">Back to Main Page</a>
-    </p>
   </body>
 </html>
