@@ -5,7 +5,7 @@ import db from '../../db/connect.js';
 
 const ai = new GoogleGenAI();
 
-const sendPrompt = async () => {
+const sendPrompt = async (promptObject) => {
   try {
     return await ai.models.generateContent({
       model: 'gemini-flash-latest',
@@ -27,7 +27,7 @@ const generateAndSaveStory = async (promptObject) => {
 
   try {
     console.log('Sending prompt to Gemini API...');
-    const response = await sendPrompt();
+    const response = await sendPrompt(promptObject);
     storyText = response.text;
   } catch(error) {
     console.error('Error happened on sending the prompt:', error);
