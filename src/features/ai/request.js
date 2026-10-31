@@ -29,7 +29,7 @@ const generateAndSaveStory = async (promptObject) => {
     console.log('Sending prompt to Gemini API...');
     const response = await sendPrompt();
     storyText = response.text;
-  } catch(err) {
+  } catch(error) {
     console.error('Error happened on sending the prompt:', error);
     return { success: false, error };
   }
