@@ -11,7 +11,7 @@ const sendPrompt = async () => {
       model: 'gemini-flash-latest',
       contents: promptObject.text,
     });
-  } catch(err) {
+  } catch(error) {
     console.error('Error happened on sending the prompt:', error);
   }
 }
