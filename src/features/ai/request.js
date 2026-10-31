@@ -35,7 +35,7 @@ const generateAndSaveStory = async (promptObject) => {
     return { success: false, error: response.error };
   }
 
-  storyText = response.text;
+  storyText = response.response.text;
 
   try {
     const result = saveStoryToDB(storyText, promptObject);
