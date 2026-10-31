@@ -7,12 +7,16 @@ const ai = new GoogleGenAI();
 
 const sendPrompt = async (promptObject) => {
   try {
-    return await ai.models.generateContent({
+    const response = await ai.models.generateContent({
       model: 'gemini-flash-latest',
       contents: promptObject.text,
     });
+    return { response };
   } catch(error) {
     console.error('Error happened on sending the prompt:', error);
+    if (error.message) {
+      return { error: JSON.parse(error.message) };
+    }
   }
 }
 
@@ -25,14 +29,13 @@ const saveStoryToDB = (storyText, promptObject) => {
 const generateAndSaveStory = async (promptObject) => {
   let storyText;
 
-  try {
-    console.log('Sending prompt to Gemini API...');
-    const response = await sendPrompt(promptObject);
-    storyText = response.text;
-  } catch(error) {
-    console.error('Error happened on sending the prompt:', error);
-    return { success: false, error };
+  console.log('Sending prompt to Gemini API...');
+  const response = await sendPrompt(promptObject);
+  if (response.error) {
+    return { success: false, error: response.error };
   }
+
+  storyText = response.text;
 
   try {
     const result = saveStoryToDB(storyText, promptObject);

@@ -35,7 +35,7 @@ const generateStoryHandler = async (request, reply) => {
     const storyResult = await generateAndSaveStory({ text: prompt.text, id: prompt.id });
 
     if (!storyResult.success) {
-      return reply.status(500).send({ error: 'Failed to generate story.' });
+      return reply.status(500).send({ error: 'Failed to generate story: ' + JSON.stringify(storyResult.error) });
     }
 
     const storyText = db
